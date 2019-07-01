@@ -1,4 +1,4 @@
-.author, .points_landing, .landing {
+.author, .points_landing, .landing, .fixtures_landing {
   font-family: sans-serif;
   font-size: 18px;
   font-weight: bold;
@@ -14,6 +14,9 @@
 
 .landing {
   background-color: red; }
+
+.fixtures_landing {
+  background-color: grey; }
 
 .row > div {
   padding: 10px;
