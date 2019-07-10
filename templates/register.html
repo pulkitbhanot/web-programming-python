@@ -1,0 +1,37 @@
+<!-- Screen for registration of a new user -->
+{% extends "layout.html" %}
+
+{% block heading %}
+    New User Registration
+{% endblock %}
+
+{% block body %}
+    <form action="{{ url_for('register') }}" method="post">
+        <div class="container">
+            <p>Please fill in this form to create an account.</p>
+            <hr>
+            {% if error_message %}
+                <p style="color: red">{{ error_message }}</p>
+            {% endif %}
+            <label for="email"><b>Email</b></label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Username" required autofocus>
+
+            <label for="psw-lbl"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" id="password" required>
+
+            <label for="firstname-lbl"><b>First Name</b></label>
+            <input type="text" placeholder="First Name" name="firstname" id="firstname" required>
+
+            <label for="lastname-lbl"><b>Last Name</b></label>
+            <input type="text" placeholder="Last Name" name="lastname" id="lastname" required>
+            <hr>
+
+            <p>By creating an account you agree to our Terms & Privacy</p>
+            <button type="submit">Register</button>
+        </div>
+
+        <div class="container signin">
+            <p>Already have an account? <a href="{{ url_for('index') }}">Sign in</a>.</p>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!-- landing page/ search page post a user successfully logs in into the system -->
+{% extends "loggedin_layout.html" %}
+
+{% block heading %}
+    Lookup Books
+{% endblock %}
+
+{% block body %}
+    <!-- Show the search input box -->
+    <form action="{{ url_for('search') }}" method="post">
+        <div class="container">
+            <label for="email"><b>Search on ISBN/Title/Author of the book</b></label>
+            <div class="input-group">
+                <input type="text" name="search_str" id="search_str" class="form-control"
+                       placeholder="ISBN/Title of the book/Author of the book" required autofocus>
+                &nbsp;&nbsp;&nbsp;
+                <span class="input-group-btn">
+
+            <button class="btn btn-primary btn-block text-uppercase" type="submit" class="form-control">Search</button>
+              </span>
+            </div>
+        </div>
+
+    </form>
+    <!-- code to display the search results or a message that no books have been found matching the criteria-->
+    <div class="container">
+
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+        {% if books and books|length > 0 %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Year</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for book in books %}
+                    <tr>
+                        <th scope="row"><a href="{{ url_for('book_details', isbn=book.id) }}">{{ book.id }}</a></th>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.year }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
