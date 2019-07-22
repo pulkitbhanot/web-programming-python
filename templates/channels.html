@@ -1,0 +1,82 @@
+<!-- landing page post user registration or if a session is already active, this page is used to show both the public and private channels -->
+{% extends "layout.html" %}
+
+{% block heading %}
+    Channel List
+{% endblock %}
+
+{% block body %}
+    <!-- display the form for the user to create a new channel -->
+    <div>
+        <form action="{{ url_for('create_channel') }}" method="post" class="form-inline">
+            <input type="hidden" name="channel_type" value="{{ channel_type }}">
+            <div class="container">
+                <b align="left">Create New {{ channel_type }} Channel </b>
+                <div class="form-row align-items-center">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="channel_name" name="channel_name" required autofocus
+                               placeholder="Channel Name" size=30>
+                    </div>
+                    <div class="col-md-6">
+
+                        <input type="text" class="form-control" id="channel_description" name="channel_description"
+                               size=50
+                               required autofocus placeholder="Channel Description">
+                    </div>
+                    <div class="col-md-3">
+
+                        <button class="btn btn-primary"
+                                type="submit" class="form-control">Create Channel
+                        </button>
+                    </div>
+                </div>
+                {% if error_message %}
+                    <p style="color: red">{{ error_message }}</p>
+                {% endif %}
+            </div>
+
+        </form>
+
+    </div>
+    <!-- code to display list of channels to the user-->
+    <div class="container">
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+        {% if channels and channels|length > 0 %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Channel Views</th>
+                    <!-- Below table column is specific to the private channels-->
+                    {% if channel_type == 'private' %}
+                        <th scope="col">Invite Link</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for channel in channels %}
+                    <tr>
+                        <td scope="row">{{ channel.channel_name }} &nbsp;<a
+                                href="{{ url_for('connect_channel', channel_id=channel.id, channel_type=channel_type) }}"><b>(Join)</b></a>
+                        </td>
+                        <td>{{ channel.channel_owner }}</td>
+                        <td>{{ channel.channel_description }}</td>
+                        <td>{{ channel.user_count }}</td>
+                        <!-- Below table column is specific to the private channels-->
+                        {% if channel_type == 'private' %}
+                            <td scope="col">
+                                <input type="button" onClick='copyURL("{{ channel.id }}","{{ channel_type }}")'
+                                       value="Copy URL"/>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

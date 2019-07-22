@@ -1,0 +1,49 @@
+<!-- This page is explicitly used to show the chat page for a specific channel-->
+{% extends "layout_chat.html" %}
+
+{% block heading %}
+    Connected to {{ channel_type }} channel : {{ channel_name }}
+{% endblock %}
+
+{% block body %}
+
+    <!-- code to display list of existing messages in a channel-->
+    <div class="container" id="parent-container" name="parent-container">
+        {% if error_message %}
+            <p style="color: red" id="error_message" name="error_message">{{ error_message }}</p>
+        {% endif %}
+        <input type="hidden" id="message_count" name="message_count" value="{{ messages|length }}">
+        {% if messages and messages|length > 0 %}
+            {% for message in messages %}
+                <div class="{{ loop.cycle('container', 'container darker') }}">
+
+                    <span class="author-left"><b>@{{ message.sender_name }}</b><em> &nbsp;&nbsp; : &nbsp;&nbsp;{{ message.message_content }}</em></span>
+                    <span class="time-right">{{ message.message_time }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <!-- Below is the section for the user to enter a comment on a given group -->
+    <div>
+        <input type="hidden" id="channel_type" name="channel_type" value="{{ channel_type }}">
+        <input type="hidden" id="channel_name" name="channel_name" value="{{ channel_name }}">
+        <input type="hidden" id="channel_id" name="channel_id" value="{{ channel_id }}">
+        <input type="hidden" id="username" name="username" value="{{ username }}">
+        <div class="container">
+            <div class="form-row align-items-center">
+                <div class="col-md-3">
+                    <div>Channel Views: <span id="total_user_count">{{ total_user_count }}</span></div>
+                </div>
+                <div class="col-md-6">
+
+                    <input type="text" class="form-control" id="message" name="message"
+                           required autofocus placeholder="Type your message here">
+                </div>
+                <div class="col-md-3">
+                    <button send-message="comment" id="comment">Comment</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
