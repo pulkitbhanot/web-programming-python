@@ -1,0 +1,108 @@
+<!-- HTML page for a user to view the order details. If the user is a superuser it also lets the user change the order state via click of a button-->
+{% extends "orders/logged-in-layout.html" %}
+{% block body %}
+    <ul>
+        {% if request.user.is_superuser %}
+            <li>Order Placed by : {{ order.first_name }} {{ order.first_name }}({{ order.username }})</li>
+        {% else %}
+            <li>Currently logged in as: {{ user.username }}</li>
+        {% endif %}
+
+        <li> Order Id : {{ order.order_id }}</li>
+        <li> Order Date : {{ order.order_time }}</li>
+        <li> State : {{ order.order_state }}</li>
+        <li> Item Count : {{ order.item_count }}</li>
+        <li> Order Amount : {{ order.order_amount }}</li>
+    </ul>
+
+    <div class="container">
+        {% csrf_token %}
+        <table class="table table-bordered table-striped" id="carttable">
+            <tr>
+                <th>
+                    Item Name
+                </th>
+                <th>
+                    Item count
+                </th>
+                <th>
+                    Item price
+                </th>
+
+            </tr>
+            {% for item in order.items %}
+                <tr id="row{{ item.unique_item_id }}">
+                    <td>
+                        {{ item.cat_name }} - {{ item.item_name }}
+                        {% if item.topping_list|length > 0 %}
+                            <br/>Toppings
+                            {% for topping in item.topping_list %}
+                                <br/>&nbsp;&nbsp;&nbsp;-{{ topping.topping_name }}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ item.item_count }}
+                    </td>
+                    <td>
+                        ${{ item.item_price }}
+                        {% if item.topping_list|length > 0 %}
+                            <br/>Toppings Cost
+                            {% for topping in item.topping_list %}
+                                <br/>&nbsp;&nbsp;&nbsp;+ (${{ topping.price }})
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- display the bottom buttoms based on the current state of the order only for superuser -->
+    <div class="container">
+        <div class="pull-left">
+
+            <button type="button" class="btn btn-success btn-default btn-block btn-lg" id="back"
+                    name="placeorder">
+                <span class="glyphicon glyphicon-backward"></span><a href="{% url 'order_history' %}">&nbsp;Back</a>
+            </button>
+        </div>
+
+        {% if request.user.is_superuser %}
+            <div class="pull-right">
+                {% if order.order_state == "Created" %}
+                    <button type="button" class="btn btn-secondary btn-default btn-block btn-lg" id="back"
+                            name="placeorder">
+                        {% url 'update_order' order_id=order.order_id state_id=2 as the_url %}
+                        <a href="{{ the_url }}">Being Prepared&nbsp;</a><span
+                            class="glyphicon glyphicon-forward"></span>
+                    </button>
+                {% elif order.order_state == "Being Prepared" %}
+                    <button type="button" class="btn btn-info btn-default btn-block btn-lg" id="back"
+                            name="placeorder">
+                        {% url 'update_order' order_id=order.order_id state_id=3 as the_url %}
+
+                        <a href="{{ the_url }}">Ready for Pickup&nbsp;</a><span
+                            class="glyphicon glyphicon-forward"></span>
+                    </button>
+                {% elif order.order_state == "Ready for Pickup" %}
+                    <button type="button" class="btn btn-warning btn-default btn-block btn-lg" id="back"
+                            name="placeorder">
+                        {% url 'update_order' order_id=order.order_id state_id=4 as the_url %}
+
+                        <a href="{{ the_url }}">Ready for Pickup&nbsp;</a><span class="glyphicon glyphicon-forward"></span>
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-success btn-default btn-block btn-lg" id="back"
+                            name="placeorder" disabled>
+                        {% url 'update_order' order_id=order.order_id state_id=4 as the_url %}
+
+                        <a href="#">Picked up&nbsp;</a><span class="glyphicon glyphicon-ok-sign"></span>
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!-- Base template for user logged in html pages-->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'orders/styles.css' %}"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+</head>
+<body>
+<div class="container" id="topheader">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#"><img src="{% static "orders/Pizza.jpeg" %}" alt="PinocchiosPizza.com"
+                                              width="200"
+                                              height="60" class="d-inline-block align-top"></a>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto ">
+                <li class="nav-item ">
+                    <a class="nav-link" href="{% url 'index' %}">Menu </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_history' %}">Orders</a>
+                </li>
+            </ul>
+            <ul class="nav justify-content-end ">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_cart' %}">
+                    <span class="glyphicon glyphicon-shopping-cart" id="cart_item_count" name="cart_item_count">Cart{% if item_count > 0 %}({{ item_count }}){% endif %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        <span class="glyphicon glyphicon-log-out">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<div class="container">
+    {% block body %}
+    {% endblock %}
+</div>
+</body>
+</html>
