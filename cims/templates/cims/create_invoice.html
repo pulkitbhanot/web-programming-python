@@ -1,0 +1,91 @@
+<!-- UI page to create a new invoice in the system -->
+{% extends "cims/base.html" %}
+
+{% block body %}
+    {% load static %}
+
+    <script src="{% static 'cims/app.js' %}"></script>
+
+    <form action="{% url 'create_invoice' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <ul>
+            <li>Currently logged in as: {{ user.username }}</li>
+        </ul>
+
+        <div class="container">
+            <!-- UI Section for general information for the invoice -->
+            <fieldset>
+                <h2>Invoice Information</h2>
+                <div class="row">
+                    <div class="control-group col-sm-12">
+                        <label class="control-label">Description</label>
+                        <div class="controls">
+                            <input id="description" name="description" type="text" placeholder="Description"
+                                   class="input-xlarge">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="control-group col-sm-6">
+                        <label class="control-label">Customer</label>
+                        <div class="controls">
+                            <select id="linked_customer" name="linked_customer" class="linked_customer">
+                                <option value="" selected="selected">(please select a customer)</option>
+
+                                {% for user in linked_users %}
+                                    <option value="{{ user.user_id }}">{{ user.bussiness_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group col-sm-6">
+                        <label class="control-label">Invoice Due Date</label>
+                        <div class="controls">
+                            <input class="input-xlarge" id="date" name="date" placeholder="YYYY-MM-DD" type="text"/>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="control-group col-sm-12">
+                        <label class="control-label">Note</label>
+                        <div class="controls">
+                            <input id="note" name="note" type="text" placeholder="Note"
+                                   class="input-xlarge">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <!-- UI section to add invoice items to the screen-->
+        <div class="container">
+            <input type="hidden" id="row_count" name="row_count" value="0"/>
+            <table id="myTable" class=" table order-list">
+                <tr class="row">
+                    <th style="width: 60%;">Description</th>
+                    <th style="width: 13%;">Price</th>
+                    <th style="width: 17%;">Upload</th>
+                    <th style="width: 10%;"></th>
+                </tr>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <!-- UI section to show the bottom buttons on the page -->
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 text-left">
+                    <input type="button" class="btn btn-info btn-default btn-lg pull-left" id="addrow"
+                           value="Add New Item"/>
+
+                </div>
+                <div class="col-sm-4">&nbsp;</div>
+                <div class="col-sm-4 text-right">
+                    <input type="submit" class="btn btn-success btn-default btn-lg pull-right" id="createinvoice"
+                           value="Create Invoice"/>
+
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

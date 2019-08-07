@@ -1,0 +1,142 @@
+<!-- UI page to show all the linked customers for a supplier -->
+{% extends "cims/base.html" %}
+{% block body %}
+    {% load static %}
+    <script src="{% static 'cims/app.js' %}"></script>
+    <ul>
+        <li>Currently logged in as: {{ user.username }}</li>
+        {% if linked_users|length > 0 %}
+            <li class="pending_invoice_count" id="pending_invoice_count" name="pending_invoice_count"> Total number of
+                pending invoice {{ pending_invoice_count }}</li>
+            <li class="pending_invoice_amount" id="pending_invoice_amount" name="pending_invoice_amount"> Sum of amount
+                for pending invoices {{ pending_invoice_amount }}</li>
+        {% else %}
+            <li class="total_price_count" id="total_price_count" name="total_price_count"> No Linked Users found, lookup
+                users and link them to your account.
+            </li>
+        {% endif %}
+    </ul>
+    <!-- Generate inner navigation bar for the categories.-->
+    <ul class="nav nav-tabs" id="categoryList" role="tablist">
+        {% for category in categories %}
+            <li class="nav-item">
+                <a class="nav-link span" id="{{ category.id }}" data-toggle="tab" data-url="category/{{ category.id }}"
+                   href="#{{ category.id }}" role="tab"
+                   aria-controls="{{ category.name }}"
+                   data-target="#item_list{{ category.id }}">{{ category.name }}</a>
+            </li>
+        {% empty %}
+            <li></li>
+        {% endfor %}
+    </ul>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9">&nbsp;</div>
+            <div class="col-sm-3 text-right">
+                <button class="btn btn-success btn-default btn-lg pull-right userlookup" id="userlookup"
+                        name="userlookup" data-user="{{ user.username }}">Lookup Customer
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Display a tabular view of users-->
+    <div class="container">
+        {% csrf_token %}
+        {% if linked_users|length > 0 %}
+            <table class="table table-bordered table-striped" id="carttable">
+                <tr>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Business Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                    <th>
+                        Pending Invoices
+                    </th>
+                    <th>
+                        Amount Pending
+                    </th>
+                </tr>
+                {% for user in linked_users %}
+                    <tr id="row{{ user.username }}">
+                        <td scope="row" align="center" class="align-middle">
+                            <button id="view{{ order.order_id }}" class="removefromcart btn-warning"><span
+                                    class="glyphicon glyphicon-zoom-in"></span>
+                                <a href="{% url 'customer_linked_invoices' cust_id=user.user_id %}">
+                                    {{ user.username }}</a>
+                            </button>
+                        </td>
+                        <td align="center" class="align-middle">
+                            {{ user.first_name }} {{ user.last_name }}
+                        </td>
+                        <td align="center" class="align-middle">
+                            {{ user.bussiness_name }}
+                        </td>
+                        <td align="center" class="align-middle">
+                            {{ user.address1 }}<br/>
+                            {{ user.address2 }}<br/>
+                            {{ user.city }},{{ user.state }}, {{ user.country }}
+
+                        </td>
+                        <td align="center" class="align-middle">
+                            {{ user.pending_invoices }}
+                        </td>
+                        <td align="center" class="align-middle">
+                            {{ user.amount_due }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+    <!-- Modal that is opened for selection of customer-->
+    <div class="modal fade" id="userLookupModal" tabindex="-1" role="dialog" aria-labelledby="userLookupModal"
+         aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Customer Lookup ( unlinked customers only)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <ul id="assetNameHiddenAttributes">
+                        <form>
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    <input id="searchstring" name="searchstring" type="text"
+                                           placeholder="Search on business name">
+                                </div>
+                                <div class="col-sm-3" style=" padding: 12px 20px;">
+                                    <button id="lookupusersonname" name="lookupusersonname"
+                                            class="btn btn-success btn-lg btn-block mx-auto lookupusersonname">Lookup
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal-body" style="list-style: none; padding: 0;">
+                                <ul id="assetNameMenu" style="list-style: none; padding: 0;"></ul>
+
+                            </div>
+                        </form>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <p style="color: red" id="user_error_msg" name="user_error_msg"></p>
+                    <button class="btn btn-primary add_linking" id="add_linking" name="add_linking">Add Customers
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
