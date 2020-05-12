@@ -1,0 +1,59 @@
+.author, .points_landing, .landing, .fixtures_landing {
+  font-family: sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  border: 1px solid black;
+  padding: 20px;
+  margin: 20px; }
+
+.author {
+  background-color: green; }
+
+.points_landing {
+  background-color: orange; }
+
+.landing {
+  background-color: red; }
+
+.fixtures_landing {
+  background-color: grey; }
+
+.row > div {
+  padding: 10px;
+  background-color: white;
+  border: 1px solid black; }
+
+div {
+  font-size: 16px; }
+  div p {
+    color: green; }
+  div ul {
+    color: red; }
+
+#points_table_header {
+  text-align: left;
+  color: blue;
+  font-size: 18px; }
+
+#row_header {
+  text-align: left;
+  color: blue;
+  font-size: 18px;
+  font-weight: bold; }
+
+.arrow:before {
+  content: "\21d2  Click here: ";
+  font-weight: bold; }
+
+.contact_prefix:before {
+  content: "\21d2  Contact ";
+  font-weight: bold; }
+
+@media print {
+  .screen-only {
+    display: none; } }
+@media only screen and (max-width: 600px) {
+  #author_image {
+    display: none; } }
+
+/*# sourceMappingURL=project0_stylesheet.css.map */
