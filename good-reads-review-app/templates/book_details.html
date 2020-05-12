@@ -1,0 +1,86 @@
+<!--
+File to book details page
+-->
+{% extends "loggedin_layout.html" %}
+
+{% block heading %}
+    {{ book.title }}
+{% endblock %}
+
+{% block body %}
+
+    <!-- Show the item details at the top -->
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4">
+                <img class="img-fluid" src="http://placehold.it/200x200" alt="">
+            </div>
+
+            <div class="col-md-8">
+                <h3 class="my-3">Book Details</h3>
+                <ul>
+                    <li><b>ISBN:</b>{{ book.isbn }}</li>
+                    <li><b>Author:</b>{{ book.author }}</li>
+                    <li><b>Title:</b>{{ book.title }}</li>
+                    <li><b>Year:</b>{{ book.year }}</li>
+                    {% if book.review_count %}
+                        <li><b># of Reviews:</b>{{ book.review_count }}</li>
+                    {% endif %}
+                    {% if book.average_rating %}
+                        <li><b>Avg. Rating:</b>{{ book.average_rating }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- display the form for the input of review from the user -->
+    <div>
+
+        <form action="{{ url_for('post_feedback') }}" method="post">
+            <input type="hidden" name="isbn" value="{{ book.isbn }}">
+            <div class="container">
+                <label for="post_feedback"><b>Post Feedback</b></label>
+                <div class="input-group">
+                    <textarea class="form-control custom-control" rows="3" style="resize:none" name="review"></textarea>&nbsp;&nbsp;
+                    <span class="input-group-addon"><button class="btn btn-primary btn-work text-uppercase"
+                                                            type="submit" class="form-control">Post</button></span>
+                </div>
+                {% if error_message %}
+                    <p style="color: red">{{ error_message }}</p>
+                {% endif %}
+                {% if message %}
+                    <p>{{ message }}</p>
+                {% endif %}
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Display the list of reviews for a book-->
+    <div class="container">
+
+        {% if reviews and reviews|length > 0 %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Author</th>
+                    <th scope="col">Review</th>
+                    <th scope="col">Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.username }}</td>
+                        <td>{{ review.review }}</td>
+                        <td>{{ review.created_at.strftime("%b %d %Y %H:%M:%S") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
