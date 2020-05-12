@@ -1,0 +1,126 @@
+<!-- HTML page for showing invoice details for a specific invoice, depending on supplier/customer view it modifies the
+Business Name it also has different actions based on the current logged in view-->
+{% extends "cims/base.html" %}
+{% block body %}
+
+    <ul>
+        <li> Invoice Id : {{ invoice.id }}</li>
+        {% if request.session.accounttype == 'Supplier' %}
+            <li> Customer Business Name : {{ invoice.business_name }}</li>
+        {% else %}
+            <li> Supplier Business Name : {{ invoice.supplier_name }}</li>
+        {% endif %}
+        <li> Invoice Created Date : {{ invoice.created_date }}</li>
+        <li> Invoice Due Date : {{ invoice.due_date }}</li>
+        <li> State : {{ invoice.invoice_state }}{% if invoice.overdue %} (Overdue Payment) {% endif %}</li>
+        <li> Item Count : {{ invoice.item_count }}</li>
+        <li> Invoice Amount : ${{ invoice.invoice_amount }}</li>
+        <li> Description : {{ invoice.description }}</li>
+    </ul>
+    <!-- Show the Mark settled button and Reopen button-->
+    <div class="container">
+        {% if request.session.accounttype == 'Customer' and invoice.invoice_state != 'Settled' %}
+
+            <div class="row">
+                <div class="col-sm-9"></div>
+                <div class="col-sm-3 text-right">
+                    {% url 'update_invoice_status' invoice_id=invoice.id state_id='Settled' as the_url %}
+                    <a href="{{ the_url }}"
+                       class="btn btn-success btn-default btn-lg pull-right create_new_invoice" role="button"
+                       id="create_new_invoice"
+                       name="create_new_invoice">Mark Settled</a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if request.session.accounttype == 'Supplier' and invoice.invoice_state == 'Settled' %}
+
+            <div class="row">
+                <div class="col-sm-9"></div>
+                <div class="col-sm-3 text-right">
+                    {% url 'update_invoice_status' invoice_id=invoice.id state_id='Reopen' as the_url %}
+                    <a href="{{ the_url }}"
+                       class="btn btn-warning btn-default btn-lg pull-right create_new_invoice" role="button"
+                       id="create_new_invoice"
+                       name="create_new_invoice">Reopen</a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+    <!-- UI to show the different items in an invoice-->
+    <div class="container">
+        {% csrf_token %}
+        <table class="table table-bordered table-striped" id="carttable">
+            <tr>
+                <th style="width: 100px;">
+                    Invoice Item Id
+                </th>
+                <th style="width: 150px;">
+                    Price
+                </th>
+                <th style="width: 150px;">
+                    Description
+                </th>
+                <th style="width: 100px;">
+                    Attachment
+                </th>
+
+            </tr>
+            {% for item in invoice.item_list %}
+                <tr id="row{{ item.id }}">
+                    <td> {{ item.id }} </td>
+                    <td> {{ item.price }} </td>
+                    <td> {{ item.description }} </td>
+                    <td>
+                        {% if item.no_file %}
+                            <a href="{% url 'download_file' %}"
+                               class="btn btn-link btn-default btn-lg pull-right create_new_invoice" role="button"
+                               id="create_new_invoice"
+                               name="create_new_invoice" disabled><span
+                                    class="glyphicon glyphicon-download-alt"></span>Download</a>
+                        {% else %}
+                            <a href="{% url 'download_file' item_id=item.id %}"
+                               class="btn btn-link btn-default btn-lg pull-right create_new_invoice" role="button"
+                               id="create_new_invoice"
+                               name="create_new_invoice"><span
+                                    class="glyphicon glyphicon-download-alt"></span>Download</a>
+                        {% endif %}
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </table>
+    </div>
+    <!-- UI to show the notes section-->
+    <div class="container" id="parent-container" name="parent-container">
+        <fieldset>
+            <h2>Notes</h2>
+            {% for message in invoice.item_notes %}
+                <div class="{% cycle 'container-note' 'container-note darker-note' %}">
+                    <span class="author-left"><b>@{{ message.sender_username }}</b><em> &nbsp;&nbsp; : &nbsp;&nbsp;{{ message.description }}</em></span>
+                    <span class="time-right">{{ message.createdTime }}</span>
+                </div>
+            {% endfor %}
+            <form action="{% url 'post_note' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="invoice_id" name="invoice_id" value="{{ invoice.id }}"/>
+                <div class="row align-items-center">
+
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-8">
+
+                        <input type="text" class="form-control" id="message" name="message"
+                               required autofocus placeholder="Type your note here">
+                    </div>
+                    <div class="col-md-2">
+                        <button send-message="comment" id="comment" type="submit">Post</button>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+    </div>
+
+{% endblock %}

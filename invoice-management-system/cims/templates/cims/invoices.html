@@ -1,0 +1,101 @@
+<!-- HTML page for showing all the invoices, if the user has logged in as a supplier than it shows all the invoices that this supplier has created.
+If the user logs in as customer, then this page shows all the invoices created by different suppliers for this user-->
+{% extends "cims/base.html" %}
+{% block body %}
+    {% load static %}
+    <script src="{% static 'cims/app.js' %}"></script>
+    <ul>
+        <li>Currently logged in as: {{ user.username }}</li>
+        {% if pending_invoices > 0 %}
+            <li class="total_price_count" id="total_price_count" name="total_price_count"> Total {{ pending_invoices }}
+                invoices are pending, with a total amount of {{ pending_invoice_amount }}</li>
+        {% else %}
+            <li class="total_price_count" id="total_price_count" name="total_price_count"> There are currently no
+                invoices pending payment.
+            </li>
+        {% endif %}
+    </ul>
+    </ul>
+    <!-- Display new invoice button only for suppliers-->
+    <div class="container">
+        {% if request.session.accounttype == 'Supplier' %}
+
+            <div class="row">
+                <div class="col-sm-9"></div>
+                <div class="col-sm-3 text-right">
+
+                    <a href="{% url 'new_invoice' %}"
+                       class="btn btn-success btn-default btn-lg pull-right create_new_invoice" role="button"
+                       id="create_new_invoice"
+                       name="create_new_invoice">Create New Invoice</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <!-- Display a tabular view of invoices-->
+    <div class="container">
+        {% csrf_token %}
+        {% if invoice_list|length > 0 %}
+            <table class="table table-bordered table-striped" id="carttable">
+                <tr>
+                    <th>
+                        Invoice Id
+                    </th>
+                    <th>
+                        Business Name
+                    </th>
+                    <th>
+                        Invoice Due Date
+                    </th>
+                    <th>
+                        State
+                    </th>
+                    <th>
+                        # of Items
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+                    <th>
+                        Overdue
+                    </th>
+                </tr>
+                {% for invoice in invoice_list %}
+                    <tr id="row{{ invoice.id }}">
+                        <td scope="row" align="center" class="align-middle">
+                            <button id="view{{ invoice.order_id }}" class="removefromcart btn-warning"><span
+                                    class="glyphicon glyphicon-zoom-in"></span>
+                                <a href="{% url 'invoice_details' invoice_id=invoice.id %}">
+                                    {{ invoice.id }}</a>
+                            </button>
+                        </td>
+
+                        <td>
+                            {{ invoice.business_name }}
+                        </td>
+                        <td>
+                            {{ invoice.due_date }}
+                        </td>
+                        <td>
+                            {{ invoice.invoice_state }}
+                        </td>
+                        <td>
+                            {{ invoice.item_count }}
+                        </td>
+                        <td>
+                            {{ invoice.invoice_amount }}
+                        </td>
+                        <td>
+                            {% if invoice.overdue %}
+                                <span class="label danger">Overdue</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock %}
